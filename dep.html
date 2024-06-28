@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit</title>
+    <link rel="stylesheet" href="depo.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body>
+    <div id="mn">
+        <div id="mn1">
+            <div id="bx2">
+                <div id="dtl">
+                    <button id="btn"><i class="fa fa-close"></i> Back</button>
+                </div>
+                <div id="dtr">
+                    <div id="st">
+                        <div id="flexitem"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+
+                        <div id="flexitem" style="text-align: center;"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                    </div>
+                    <div id="so">
+                        <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                            <img src="prof.png" alt="profile pic" id="imp">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="con">
+            <p id="title">Request a Deposit</p>
+            <input type="number" class='inp' id="accno" placeholder="Enter account number"><br>
+            <input type="number" id="inp" class='inp' placeholder="Enter amount to deposit">
+            <!-- <input type="text" id="inp" placeholder="sd"> -->
+            <div id="sub" name="sub"><b>Deposit</b></div>
+        </div>
+    </div>
+
+
+</body>
+<script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+        authDomain: "lulu-bank-90869.firebaseapp.com",
+        projectId: "lulu-bank-90869",
+        storageBucket: "lulu-bank-90869.appspot.com",
+        messagingSenderId: "695316046662",
+        appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore();
+
+    const docRef = doc(db, "User", localStorage.getItem('email'));
+    const docSnap = await getDoc(docRef);
+
+    console.log(localStorage.getItem('email'));
+
+    document.getElementById('sub').addEventListener("click", function () {
+        var a = document.getElementById('inp').value;
+        var b = parseInt(a);
+
+        if (a == "") {
+            alert("Please enter an amount");
+        }
+        else {
+            // add to balance
+            let x = docSnap.data().amount;
+            let y = parseInt(x);
+            let flag = 0;
+            let date = new Date();
+            y += b;
+
+            let data = { b, accno: "Self", code: "90869", date, flag };
+
+            updateDoc(docRef, { amount: y });
+
+            updateDoc(docRef, {
+                data: arrayUnion(data)
+            });
+            // alert("Deposit has been approved\nAmount deposited successfully...");
+            toastr.success('Amount deposited successfully', 'Deposit Approved');
+        }
+        // setTimeout(function(){
+        //     window.location.reload();
+        // },1500);
+    });
+
+
+    document.getElementById('btn').addEventListener("click", () => {
+        window.location.replace('deposit.html');
+    });
+
+</script>
+
+</html>

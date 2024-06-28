@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer</title>
+    <link rel="stylesheet" href="transfer.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body>
+    <div id="mn">
+        <div id="mn1">
+            <div id="bx2">
+                <div id="dtl">
+                    <button id="btn"><i class="fa fa-close"></i> Back</button>
+                </div>
+                <div id="dtr">
+                    <div id="st">
+                        <div id="flexitem"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                        <div id="flexitem" style="text-align: center;"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                    </div>
+                    <div id="so">
+                        <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                            <img src="prof.png" alt="profile pic" id="imp">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="con">
+            <h1 style="text-align: center; margin: 30px; color: black; font-size: 40px;">Transfer Amount🏦</h1>
+            <input type="number" class="inp" id="inp1" name="inp1" placeholder="Enter amount">
+            <input type="text" class="inp" id="inp2" name="inp2" placeholder="Enter account number">
+            <input type="text" class="inp" id="inp3" name="inp3" placeholder="IFSC code">
+            <div id="sub" name="sub">Transfer</div>
+        </div>
+        <!-- <div id="con" class="con" >
+            <h1 style="text-align: center; margin: 30px; color: whitesmoke; font-size: 40px;">Transfer Amount</h1>
+            <input type="number" class="inp" id="inp1" name="inp1" placeholder="Enter amount">
+            <input type="text" class="inp" id="inp2" name="inp2" placeholder="Enter account number">
+            <input type="text" class="inp" id="inp3" name="inp3" placeholder="IFSC code">
+            <div id="sub" name="sub">Transfer</div>
+        </div>
+         -->
+    </div>
+
+</body>
+<script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+        authDomain: "lulu-bank-90869.firebaseapp.com",
+        projectId: "lulu-bank-90869",
+        storageBucket: "lulu-bank-90869.appspot.com",
+        messagingSenderId: "695316046662",
+        appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    var docRef = doc(db, "User", localStorage.getItem('email'));
+    const docSnap = await getDoc(docRef);
+    var docRef1;
+    var dta;
+
+    // console.log(localStorage.getItem('email'));
+
+    document.getElementById('sub').addEventListener("click", function () {
+        var a = document.getElementById('inp1').value;
+        var b = parseInt(a);
+
+        console.log(document.getElementById('inp2').value.toString());
+        var recMail = document.getElementById('inp2').value.toString();
+        // console.log(recMail.includes("@"));
+        docRef1 = doc(db, "User", recMail);
+        // console.log(dt);
+        // if (recMail.includes("@")) {
+        //     recDoc = doc(db, "User", recMail);
+        //     const recSnap = getDoc(recDoc);
+        //     var dt = recSnap.data();
+        //     console.log(dt);
+        // }
+
+        if (a == "" || document.getElementById('inp2').value == "" || document.getElementById('inp3').value == "") {
+            alert("Please fill all the details");
+        }
+        else {
+            // subtract from balance
+            let x = docSnap.data().amount;
+            let y = parseInt(x);
+            // console.log(p);
+            const docSnap1 = getDoc(docRef1).then((docSnap) => {
+                if (docSnap.exists()) {
+                    if (y >= b) {
+                        y -= b;
+                        let p = docSnap.data().amount;
+                        let q = parseInt(p);
+                        q += b;
+                        updateDoc(docRef1, { amount: q });
+                        // console.log(docSnap.data().amount);
+                        let data;
+                        let accno = docSnap.data().email;
+                        let code = 90869;
+                        let date = new Date();
+                        let flag = 0;
+                        data = { b, accno, code, date, flag };
+
+                        updateDoc(docRef1, { transData: data });
+
+                        updateDoc(docRef1, {
+                            data: arrayUnion(data)
+                        });
+                        updateDoc(docRef, { amount: y });
+                        accno = document.getElementById('inp2').value;
+                        code = document.getElementById('inp3').value;
+                        date = new Date();
+                        flag = 1;
+                        data = { b, accno, code, date, flag };
+                        // console.log(data);
+                        // console.log(date);
+
+                        updateDoc(docRef, { transData: data });
+
+                        updateDoc(docRef, {
+                            data: arrayUnion(data)
+                        });
+                        // alert("Amount transferred...");
+                        toastr.success('Amount Tranferred Successfully', 'Transferred');
+
+                    }
+                    else {
+                        toastr.error('Insufficient Balance');
+                    }
+                }
+                else {
+                    console.log("No such document!");
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+            // setTimeout(function(){
+            //     window.location.reload();
+            // },1000);
+        }
+    });
+
+    document.getElementById('btn').addEventListener("click", () => {
+        window.location.replace("deposit.html");
+    });
+    document.getElementById('sub').addEventListener("click", () => { toastr.success("Transfer Successful") });
+
+</script>
+
+</html>

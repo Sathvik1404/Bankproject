@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statements</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="statements.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <button id="btn" onclick="window.location.replace('proj.html')"><i class="fa fa-close"></i>
+                    Back</button>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div id="flexitem"><a onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                    <div id="flexitem"><a onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                </div>
+                <div id="so">
+                    <a onclick="window.location.replace('detail.html')">
+                        <img src="prof.png" alt="profile pic" id="imp">
+                    </a>
+                </div>
+            </div>
+        </div><br><br>
+        <div id="con"><br><br>
+            <p id="title">Transaction Statements</p>
+            <table class="table table-striped">
+                <thead>
+                    <tr class="bg-info">
+                        <th>To</th>
+                        <th>Code</th>
+                        <th>Amount</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+            authDomain: "lulu-bank-90869.firebaseapp.com",
+            projectId: "lulu-bank-90869",
+            storageBucket: "lulu-bank-90869",
+            messagingSenderId: "695316046662",
+            appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        var docRef = doc(db, "User", localStorage.getItem('email'));
+        const docSnap = await getDoc(docRef);
+
+        buildTable(docSnap.data().data);
+
+        function buildTable(data) {
+            var table = document.getElementById('myTable');
+            for (var i = data.length - 1; i >= 0; i--) {
+                var row = `<tr>
+                    <td>${data[i].accno}</td>
+                    <td>${data[i].code}</td>
+                    <td style="color: ${data[i].flag == 0 ? 'rgb(8, 156, 8)' : 'rgb(213, 3, 3)'}; font-weight: 600;">
+                        ${data[i].flag == 0 ? '+' : '-'}${data[i].b}
+                    </td>
+                    <td>${new Date(data[i].date.seconds * 1000).toLocaleString()}</td>
+                </tr>`;
+                table.innerHTML += row;
+            }
+        }
+    </script>
+</body>
+
+</html>

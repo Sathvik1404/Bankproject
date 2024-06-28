@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail</title>
+    <link rel="stylesheet" href="detail.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="mn1">
+            <div id="bx2">
+                <div id="dtl">
+                    <h2 id="lul" style="cursor: pointer;">LULU Bank</h2>
+                </div>
+                <div id="dtr">
+                    <div id="st">
+                        <div id="flexitem"><a style="cursor: pointer;"
+                                onclick="window.location.replace('proj.html')">Home</a></div>
+                        <div id="flexitem" style="text-align: center;"><a style="cursor: pointer;"
+                                onclick="window.location.replace('contactus.html')">ContactUs</a></div>
+                    </div>
+                    <div id="so">
+                        <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                            <img src="prof.png" alt="profile pic" id="imp">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="det">
+            <div class="close">
+                <button class="clsbut" onclick="window.location.replace('proj.html')">❌</button>
+            </div>
+            <h1>PROFILE SECTION</h1>
+            <h2>Username : <span id="name"></span></h2>
+            <h2>Balance : <span id="balance"></span></h2>
+            <h2>Email ID : <span id="mail"></span></h2>
+            <h2>Account Number : <span id="accno"></span></h2>
+            <h2>Mobile Number : <span id="mbno"></span></h2>
+            <div>
+                <button id="signout">Sign Out</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+        authDomain: "lulu-bank-90869.firebaseapp.com",
+        projectId: "lulu-bank-90869",
+        storageBucket: "lulu-bank-90869.appspot.com",
+        messagingSenderId: "695316046662",
+        appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    const docRef = doc(db, "User", localStorage.getItem('email'));
+    const docSnap = await getDoc(docRef);
+
+    // var mDecoded = window.atob(docSnap.data().mobile);
+    // var aDecoded = window.atob(docSnap.data().accno);
+
+    console.log(localStorage.getItem('email'));
+    document.getElementById('name').textContent = docSnap.data().uname;
+    document.getElementById('balance').textContent = docSnap.data().amount;
+    document.getElementById('mail').textContent = docSnap.data().email;
+    document.getElementById('accno').textContent = docSnap.data().accno;
+    document.getElementById('mbno').textContent = docSnap.data().mobile;
+
+    document.getElementById('signout').addEventListener("click", () => {
+        if (confirm('Are you sure to Sign out ?') == true) {
+            signOut(auth).then(() => {
+                localStorage.clear();
+                window.location.replace('byte.html');
+            })
+        }
+    });
+
+    document.getElementById('lul').addEventListener("click", () => {
+        window.location.replace('proj.html')
+    });
+
+</script>
+
+</html>

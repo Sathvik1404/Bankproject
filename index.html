@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="byte2.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <h2 id="lul">LULU Bank</h2>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div class="login" id="login" name="login">Login</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main>
+        <div class="first">
+            <div class="reg">
+                <h1>REGISTER</h1>
+            </div>
+            <div class="main">
+                <input type="text" name="username" id="username" placeholder="Enter Username" required><br>
+                <input type="password" class="pass" name="pass" id="pass" placeholder="Enter Password" required><br>
+                <input type="password" class="passs" name="passs" id="passs" placeholder="Re-enter Password"
+                    required><br>
+                <input type="text" name="num" id="num" placeholder="Enter Mobile number" required><br>
+                <input type="email" name="em" id="em" placeholder="Enter Email address" required><br>
+                <div class="sign" id="signup" name="signup">SignUp</div>
+            </div>
+        </div>
+    </main>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, collection, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+            authDomain: "lulu-bank-90869.firebaseapp.com",
+            projectId: "lulu-bank-90869",
+            storageBucket: "lulu-bank-90869.appspot.com",
+            messagingSenderId: "695316046662",
+            appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore(app);
+
+        document.getElementById("login").addEventListener("click", function () {
+            window.location.replace('byte.html');
+        });
+
+        document.getElementById("signup").addEventListener("click", function () {
+            var mail = document.getElementById("em").value;
+            var password = document.getElementById("pass").value;
+            var re_password = document.getElementById("passs").value;
+            var username = document.getElementById("username").value;
+            var mb_no = document.getElementById("num").value;
+            const ran = Math.random(100000000000, 999999999999) * 1000000000000;
+            var acc_no = Math.floor(ran);
+
+            if (mail != "" && password != "" && re_password != "" && username != "" && mb_no != "") {
+                if (!password.match(".{8,20}")) {
+                    toastr.warning("Password should be minimum 8 characters");
+                } else if (!password.match("(?=.*[@#$%^&+=])")) {
+                    toastr.warning("Password should contain atleast one special character");
+                } else if (!password.match("(?=.*[A-Z])")) {
+                    toastr.warning("Password must contain atleast one capital letter");
+                } else {
+                    if (password == re_password && mb_no.length == 10) {
+                        var encoded = window.btoa(password);
+                        createUserWithEmailAndPassword(auth, mail, encoded)
+                            .then((userCredential) => {
+                                const user = userCredential.user;
+                                console.log(user);
+
+                                try {
+                                    const docRef = setDoc(doc(db, "User", mail), {
+                                        uname: username,
+                                        accno: acc_no,
+                                        epass: encoded,
+                                        email: mail,
+                                        mobile: mb_no,
+                                        amount: 5000,
+                                        bFlag: 1
+                                    });
+                                    console.log("Document written with ID: ", docRef.id);
+                                } catch (e) {
+                                    console.error("Error adding document: ", e);
+                                }
+                                toastr.success('Account created Successfully!!', 'Success');
+                                sendEmailVerification(auth.currentUser)
+                                    .then(() => {
+                                        toastr.info('Verification mail has been sent..', 'Verify');
+                                    });
+                            })
+                            .catch((error) => {
+                                const errorMessage = error.message;
+                                console.log(errorMessage);
+                                if (errorMessage == "Firebase: Error (auth/email-already-in-use).") {
+                                    toastr.error('Account with this email is already in use...', 'Already exists');
+                                } else {
+                                    toastr.error(errorMessage);
+                                }
+                            });
+                    } else {
+                        if (password != re_password) {
+                            toastr.warning('Passwords does not match');
+                        } else if (mb_no.length != 10) {
+                            toastr.warning('Enter a valid mobile number of 10 digits', 'Invalid Mobile Number');
+                        }
+                    }
+                }
+            } else {
+                toastr.warning('Please fill all the fields');
+            }
+        });
+    </script>
+</body>
+
+</html>

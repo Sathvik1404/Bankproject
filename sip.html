@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP</title>
+    <link rel="stylesheet" href="sip.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="mn1">
+            <div id="bx2">
+                <div id="dtl">
+                    <button id="btn"><i class="fa fa-close"></i> Back</button>
+                </div>
+                <div id="dtr">
+                    <div id="st">
+                        <div id="flexitem"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                        <div id="flexitem" style="text-align: center;"><a id="flexitem1" style="cursor: pointer;"
+                                onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                    </div>
+                    <div id="so">
+                        <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                            <img src="prof.png" alt="profile pic" id="imp">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="con">
+            <h1>SIP Calculator</h1>
+
+            <label for="principal">Principal Amount:</label>
+            <input type="number" id="principal" placeholder="Enter Principal Amount">
+
+            <label for="monthlyInvestment">Monthly Investment Amount:</label>
+            <input type="number" id="monthlyInvestment" placeholder="Enter Monthly Amount">
+
+            <label for="annualInterestRate">Annual Interest Rate (%):</label>
+            <input type="number" id="annualInterestRate" value="10">
+
+            <label for="investmentYears">Number of Years for Investment:</label>
+            <input type="number" id="investmentYears" placeholder="Enter Number of Years">
+
+            <button id="cal">Calculate</button>
+
+            <div id="result"></div>
+        </div>
+    </div>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+        authDomain: "lulu-bank-90869.firebaseapp.com",
+        projectId: "lulu-bank-90869",
+        storageBucket: "lulu-bank-90869.appspot.com",
+        messagingSenderId: "695316046662",
+        appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    document.getElementById('btn').addEventListener("click", () => {
+        window.location.replace('investment.html');
+    });
+
+    async function handleCalculateClick() {
+        const email = localStorage.getItem('email');
+        if (!email) {
+            alert('User not logged in');
+            return;
+        }
+
+        const docRef = doc(db, "User", email);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            alert("No such user data!");
+            return;
+        }
+
+        const userData = docSnap.data();
+        const availableBalance = userData.amount;
+        const principalAmount = parseFloat(document.getElementById('principal').value);
+        const monthlyInvestmentAmount = parseFloat(document.getElementById('monthlyInvestment').value);
+        const annualInterestRate = parseFloat(document.getElementById('annualInterestRate').value);
+        const investmentYears = parseFloat(document.getElementById('investmentYears').value);
+
+        if (availableBalance < principalAmount) {
+            alert("Insufficient Balance!");
+            return;
+        }
+
+        const finalAmount = sipCalculator(principalAmount, monthlyInvestmentAmount, annualInterestRate, investmentYears);
+        document.getElementById('result').innerHTML = "Final amount after " + investmentYears + " years of SIP investment: $" + finalAmount.toFixed(2);
+
+        const newBalance = availableBalance - principalAmount;
+
+        try {
+            await updateDoc(docRef, { amount: newBalance });
+
+            const transactionData = {
+                b: principalAmount,
+                accno: "SIP",
+                code: 90869,
+                flag: 1,
+                date: new Date() // Using ISO string instead of serverTimestamp
+            };
+
+            await updateDoc(docRef, { transData: transactionData });
+
+            await updateDoc(docRef, {
+                data: arrayUnion(transactionData)
+            });
+
+            console.log("Success");
+        } catch (error) {
+            console.error("Error updating document: ", error);
+        }
+    }
+
+    function sipCalculator(principal, monthlyInvestment, annualInterestRate, years) {
+        let monthlyInterestRate = annualInterestRate / 12 / 100;
+        let totalInvested = principal;
+        for (let i = 0; i < years * 12; i++) {
+            totalInvested += monthlyInvestment;
+            totalInvested *= (1 + monthlyInterestRate);
+        }
+        return totalInvested;
+    }
+
+    document.getElementById('cal').addEventListener("click", handleCalculateClick);
+</script>
+
+</html>

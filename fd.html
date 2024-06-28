@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Deposit</title>
+    <link rel="stylesheet" href="fd.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="mn1">
+            <div id="bx2">
+                <div id="dtl">
+                    <button id="btn"><i class="fa fa-close"></i> Back</button>
+                </div>
+                <div id="dtr">
+                    <div id="st">
+                        <div id="flexitem"><a style="cursor: pointer;"
+                                onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                        <div id="flexitem" style="text-align: center;"><a style="cursor: pointer;"
+                                onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                    </div>
+                    <div id="so">
+                        <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                            <img src="prof.png" alt="profile pic" id="imp">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="con">
+            <p id="title">Initiate Investment</p>
+            <input type="number" id="inp" placeholder="Enter amount for fixed deposit">
+            <fieldset class="range__field">
+                <input class="range" type="range" min="0" max="10" id="yearRange">
+                <svg role="presentation" width="100%" height="10" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="range__tick" x="0%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="10%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="20%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="30%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="40%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="50%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="60%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="70%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="80%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="90%" y="3" width="1" height="10"></rect>
+                    <rect class="range__tick" x="100%" y="3" width="1" height="10"></rect>
+                </svg>
+                <svg role="presentation" width="100%" height="14" xmlns="http://www.w3.org/2000/svg">
+                    <text id="0" class="range__point" x="0%" y="14" text-anchor="start">0</text>
+                    <text id="1" class="range__point" x="10%" y="14" text-anchor="middle">1</text>
+                    <text id="2" class="range__point" x="20%" y="14" text-anchor="middle">2</text>
+                    <text id="3" class="range__point" x="30%" y="14" text-anchor="middle">3</text>
+                    <text id="4" class="range__point" x="40%" y="14" text-anchor="middle">4</text>
+                    <text id="5" class="range__point" x="50%" y="14" text-anchor="middle">5</text>
+                    <text id="6" class="range__point" x="60%" y="14" text-anchor="middle">6</text>
+                    <text id="7" class="range__point" x="70%" y="14" text-anchor="middle">7</text>
+                    <text id="8" class="range__point" x="80%" y="14" text-anchor="middle">8</text>
+                    <text id="9" class="range__point" x="90%" y="14" text-anchor="middle">9</text>
+                    <text id="10" class="range__point" x="100%" y="14" text-anchor="end">10</text>
+                </svg>
+                <p style="padding: 1px;">(in Years)</p>
+            </fieldset>
+            <div id="sub" name="sub">Deposit</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+            authDomain: "lulu-bank-90869.firebaseapp.com",
+            projectId: "lulu-bank-90869",
+            storageBucket: "lulu-bank-90869.appspot.com",
+            messagingSenderId: "695316046662",
+            appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        document.getElementById('btn').addEventListener("click", () => {
+            window.location.replace('investment.html');
+        });
+
+        document.getElementById('sub').addEventListener("click", async () => {
+            const email = localStorage.getItem('email');
+            if (!email) {
+                alert('User not logged in');
+                return;
+            }
+
+            const docRef = doc(db, "User", email);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                alert("No such user data!");
+                return;
+            }
+
+            const userData = docSnap.data();
+            const availableBalance = userData.amount;
+            const depositAmount = parseFloat(document.getElementById('inp').value);
+            const investmentYears = parseInt(document.getElementById('yearRange').value);
+
+            if (availableBalance < depositAmount) {
+                alert("Insufficient Balance!");
+                return;
+            }
+
+            const newBalance = availableBalance - depositAmount;
+
+            try {
+                await updateDoc(docRef, { amount: newBalance });
+
+                const transactionData = {
+                    b: depositAmount,
+                    accno: "FD",
+                    code: 90869,
+                    years: investmentYears,
+                    date: new Date()
+                };
+
+                await updateDoc(docRef, { transData: transactionData });
+                await updateDoc(docRef, {
+                    data: arrayUnion(transactionData)
+                });
+
+                alert("Fixed deposit successfully created!");
+                console.log("Success");
+            } catch (error) {
+                console.error("Error updating document: ", error);
+            }
+        });
+    </script>
+</body>
+
+</html>

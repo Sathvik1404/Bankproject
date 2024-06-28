@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <link rel="stylesheet" href="account.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <h2 id="lul"></h2>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div id="flexitem"><a style="cursor: pointer;"
+                            onclick="window.location.replace('proj.html')">Home</a></div>
+                    <div id="flexitem" style="text-align: center;"><a style="cursor: pointer;"
+                            onclick="window.location.replace('download.html')">Download </a></div>
+                    <div id="flexitem" style="text-align: center;"><a style="cursor: pointer;"
+                            onclick="window.location.replace('contactus.html')">Contact Us </a></div>
+                </div>
+                <div id="so">
+                    <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                        <img src="prof.png" alt="profile pic" id="imp">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="module">
+
+    document.getElementById('lul').textContent = "< back";
+
+    document.getElementById('lul').addEventListener("click", () => {
+        window.location.replace('proj.html');
+    });
+</script>
+
+</html>

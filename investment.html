@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment</title>
+    <link rel="stylesheet" href="investment.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <button id="btn"><i class="fa fa-close"></i> Back</button>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div id="flexitem"><a style="cursor: pointer;"
+                            onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                    <div id="flexitem" style="text-align: center;"><a style="cursor: pointer;"
+                            onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                </div>
+                <div id="so">
+                    <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                        <img src="prof.png" alt="profile pic" id="imp">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="cont">
+            <div id="ite1" style="cursor: pointer;">
+                <div id="cbx">
+                    <img src="moneybag.png" alt="" id="img">
+                    <h3>Fixed Deposit</h3>
+                </div>
+            </div>
+            <div id="ite2" style="cursor: pointer;">
+                <div id="cbx">
+                    <img src="payday.png" alt="" id="img">
+                    <h3>S I P</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="module">
+    document.getElementById('ite1').addEventListener("click", () => {
+        window.location.replace('fd.html');
+    });
+
+    document.getElementById('ite2').addEventListener("click", () => {
+        window.location.replace('sip.html');
+    });
+
+    document.getElementById('btn').addEventListener("click", () => {
+        window.location.replace('proj.html');
+    });
+</script>
+
+</html>

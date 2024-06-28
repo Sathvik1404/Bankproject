@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Bank Account</title>
+    <link rel="stylesheet" href="service.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <h2 id="lul">LULU Bank</h2>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div id="flexitem"><a id="flexitem1" style="cursor: pointer;"
+                            onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                    <div id="flexitem" style="text-align: center;"><a id="flexitem1" style="cursor: pointer;"
+                            onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                </div>
+                <div id="so">
+                    <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                        <img src="prof.png" alt="profile pic" id="imp">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="close">
+                <button class="clsbut" style="background-color: white;" onclick="window.location.replace('proj.html')">❌</button>
+            </div>
+            <div class="header">
+                <h1>Block Bank Account</h1>
+            </div>
+            <div id="block-account-form">
+                <div class="form-group">
+                    <label for="account-number">Account Number:</label>
+                    <input type="text" id="account-number" name="account-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="account-holder-name">Account Holder Name:</label>
+                    <input type="text" id="account-holder-name" name="account-holder-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="reason">Reason for Blocking:</label>
+                    <textarea id="reason" name="reason" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button id="btn">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+            authDomain: "lulu-bank-90869.firebaseapp.com",
+            projectId: "lulu-bank-90869",
+            storageBucket: "lulu-bank-90869.appspot.com",
+            messagingSenderId: "695316046662",
+            appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        const mail = localStorage.getItem('email');
+        console.log("Logged in with " + mail)
+
+        const docRef = doc(db, "User", mail);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            console.log("Document data:", docSnap.data().uname);
+        }
+        else {
+            // docSnap.data() will be undefined in this case
+            console.log("No such document!");
+        }
+        console.log(docSnap.data().accno);
+        console.log(docSnap.data().email);
+        document.getElementById('btn').addEventListener("click", () => {
+            let accountnumber = document.getElementById('account-number').value;
+            let email = document.getElementById('email').value;
+            if (accountnumber == docSnap.data().accno && email == docSnap.data().email) {
+                document.getElementById('btn').addEventListener("click", () => {
+                    let x = confirm("Are you sure to block your account?");
+                    if (x) {
+                        let b = 0;
+                        updateDoc(docRef, { bFlag: b });
+                        // console.log(docSnap.data());
+                        setTimeout(function () {
+                            signOut(auth).then(() => {
+                                localStorage.clear();
+                                window.location.replace('byte.html');
+                            })
+                        }, 900)
+                    }
+                });
+            }
+            else {
+                alert("Please Enter Correct details");
+            }
+        });
+
+
+        document.getElementById('lul').addEventListener("click", () => {
+            window.location.reload();
+        });
+
+    </script>
+
+</body>
+
+</html>

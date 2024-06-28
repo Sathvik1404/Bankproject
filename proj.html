@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuLu Bank</title>
+    <link rel="stylesheet" href="pro1.css">
+</head>
+
+<body>
+    <div id="mn">
+        <div id="bx2">
+            <div id="dtl">
+                <h2 id="lul">LULU Bank</h2>
+            </div>
+            <div id="dtr">
+                <div id="st">
+                    <div id="flexitem"><a id="flexitem1" style="cursor: pointer;"
+                            onclick="window.location.replace('proj.html')"><u>Home</u></a></div>
+                    <div id="flexitem" style="text-align: center;"><a id="flexitem1" style="cursor: pointer;"
+                            onclick="window.location.replace('contactus.html')"><u>ContactUs</u></a></div>
+                </div>
+                <div id="so">
+                    <a style="cursor: pointer;" onclick="window.location.replace('detail.html')">
+                        <img src="prof.png" alt="profile pic" id="imp">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h1 id="tt">Welcome, <span id="name"></span>!</h1>
+            <div id="itm">
+                <div id="it3" style="cursor: pointer;">
+                    <div id="bx">
+                        <!-- <button id="cm">deposit</button> -->
+                        <img id="imag" src="transfer.png" alt="deposit">
+                        <br>
+                        <h3>Transactions</h3>
+                    </div>
+
+                </div>
+                <div id="it4" style="cursor: pointer;">
+                    <div id="bx">
+                        <!-- <button id="cm">transfer</button> -->
+                        <img src="investment.png" id="imag" alt="investment">
+                        <br>
+                        <h3>Investments</h3>
+                    </div>
+                </div></a>
+                <div id="it5" style="cursor: pointer;">
+                    <div id="bx">
+                        <!-- <button id="cm">fixed deposit</button> -->
+                        <img src="bank-account.png" id="imag" alt="account">
+                        <br>
+                        <h3>Statements</h3>
+                    </div>
+                </div></a>
+                <div id="it6" style="cursor: pointer;">
+                    <div id="bx">
+                        <!-- <button id="cm">loan</button> -->
+                        <img src="customer-support.png" id="imag" alt="servies">
+                        <br>
+                        <h3>Block Account</h3>
+                    </div>
+                </div></a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1BIQDt4MVn2h1Wq0Xxt09wkZe66K7Lik",
+        authDomain: "lulu-bank-90869.firebaseapp.com",
+        projectId: "lulu-bank-90869",
+        storageBucket: "lulu-bank-90869.appspot.com",
+        messagingSenderId: "695316046662",
+        appId: "1:695316046662:web:9fa4c6c839c2f2dbd5fb47"
+    };
+
+    document.getElementById('it3').addEventListener("click", () => {
+        window.location.replace('deposit.html');
+    });
+
+    document.getElementById('it4').addEventListener("click", () => {
+        window.location.replace('investment.html');
+    });
+
+    document.getElementById('it5').addEventListener("click", () => {
+        window.location.replace('statements.html');
+    });
+
+    document.getElementById('it6').addEventListener("click", () => {
+        window.location.replace('service.html');
+    });
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    const mail = localStorage.getItem('email');
+    console.log("Logged in with " + mail)
+
+    const docRef = doc(db, "User", mail);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data().uname);
+        document.getElementById('name').textContent = docSnap.data().uname;
+    }
+    else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
+    }
+
+    document.getElementById('lul').addEventListener("click", () => {
+        window.location.reload();
+    });
+
+</script>
+
+</html>
